@@ -1,19 +1,3 @@
-/*
- * Copyright 2019, The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.example.android.trackmysleepquality.sleeptracker
 
 import android.app.Application
@@ -38,7 +22,6 @@ class SleepTrackerViewModel(
      * Hold a reference to SleepDatabase via SleepDatabaseDao.
      */
     val database = dataSource
-
 
     private var tonight = MutableLiveData<SleepNight?>()
 
@@ -71,7 +54,6 @@ class SleepTrackerViewModel(
     val clearButtonVisible = Transformations.map(nights) {
         it?.isNotEmpty()
     }
-
 
     /**
      * Request a toast by setting this value to true.
@@ -119,6 +101,21 @@ class SleepTrackerViewModel(
         _navigateToSleepQuality.value = null
     }
 
+    /**
+     * Navigation for the SleepDetail fragment.
+     */
+    private val _navigateToSleepDetail = MutableLiveData<Long>()
+    val navigateToSleepDetail
+        get() = _navigateToSleepDetail
+
+    fun onSleepNightClicked(id: Long) {
+        _navigateToSleepDetail.value = id
+    }
+
+    fun onSleepDetailNavigated() {
+        _navigateToSleepDetail.value = null
+    }
+
     init {
         initializeTonight()
     }
@@ -131,29 +128,29 @@ class SleepTrackerViewModel(
 
     /**
      *  Handling the case of the stopped app or forgotten recording,
-     *  the start and end times will be the same.
+     *  the start and end times will be the same.j
      *
      *  If the start time and end time are not the same, then we do not have an unfinished
      *  recording.
      */
     private suspend fun getTonightFromDatabase(): SleepNight? {
-            var night = database.getTonight()
-            if (night?.endTimeMilli != night?.startTimeMilli) {
-                night = null
-            }
-            return night
+        var night = database.getTonight()
+        if (night?.endTimeMilli != night?.startTimeMilli) {
+            night = null
+        }
+        return night
     }
 
     private suspend fun insert(night: SleepNight) {
-            database.insert(night)
+        database.insert(night)
     }
 
     private suspend fun update(night: SleepNight) {
-            database.update(night)
+        database.update(night)
     }
 
     private suspend fun clear() {
-            database.clear()
+        database.clear()
     }
 
     /**
